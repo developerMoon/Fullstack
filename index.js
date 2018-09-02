@@ -3,7 +3,7 @@ const app = express(); //generates new express app, could be single app or more
 //this generated app listens incoming request
 
 app.get('/', (req, res)=>{
-    res.send({ hi: 'there' }); //route handler
+    res.send({ bye: 'done for today' }); //route handler
     //want to close the req and send back response containing the json data
     //arrow function automatically called, any time some request comes into '/'
 }); //express server running
