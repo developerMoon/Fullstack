@@ -1,13 +1,11 @@
 const express = require('express'); //require: access to express library
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
+require('./services/passport'); //cuz passport.js is not exporting anything
+
 
 const app = express(); //generates new express app, could be single app or more
 //this generated app listens incoming request
 
-//console.developers.google.com
-
-passport.use(new GoogleStrategy());
+require('./routes/authRoutes')(app);
 
 //this PORT const shouldn't changed 
 const PORT = process.env.PORT || 5000;
