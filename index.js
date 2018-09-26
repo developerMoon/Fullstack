@@ -1,6 +1,10 @@
 const express = require('express'); //require: access to express library
-require('./services/passport'); //cuz passport.js is not exporting anything
+const mongoose = require('mongoose');
+const keys = require('./config/keys');
 
+require('./services/passport'); //cuz passport.js is not exporting anything
+require('./models/User'); //not executed automatically unless require it here
+mongoose.connect(keys.mongoURI);
 
 const app = express(); //generates new express app, could be single app or more
 //this generated app listens incoming request
