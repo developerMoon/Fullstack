@@ -2,8 +2,10 @@ const express = require('express'); //require: access to express library
 const mongoose = require('mongoose');
 const keys = require('./config/keys');
 
-require('./services/passport'); //cuz passport.js is not exporting anything
 require('./models/User'); //not executed automatically unless require it here
+require('./services/passport'); //cuz passport.js is not exporting anything
+//order is important as user needs to be imported first then used in passport
+
 mongoose.connect(keys.mongoURI);
 
 const app = express(); //generates new express app, could be single app or more
