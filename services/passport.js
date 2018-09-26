@@ -9,13 +9,20 @@ const User = mongoose.model('users'); //using userSchema loaded from User.js
 passport.use(
     new GoogleStrategy(
       {
-              clientID: keys.googleClientID,
-              clientSecret: keys.googleClientSecret,
-              callbackURL: '/auth/google/callback'
+				clientID: keys.googleClientID,
+				clientSecret: keys.googleClientSecret,
+				callbackURL: '/auth/google/callback'
       }, 
       (accessToken, refreshToken, profile, done) => {
-              new User({ googleId: profile.id }).save();
-
+				User.findOne({ googleId: profile.id })
+					.then((existingUser) => {
+						if (existingUser)	{
+							//we already have a record with the given ID
+						} else {
+							//we don't have a user record with this ID, make a new record
+							new User({ googleId: profile.id }).save(); //save new user to db
+						}
+					});
       }
     )
 );
