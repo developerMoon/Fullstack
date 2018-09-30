@@ -1,5 +1,7 @@
 const express = require('express'); //require: access to express library
 const mongoose = require('mongoose');
+const cookieSession = require('cookie-session');
+const passport = require('passport')
 const keys = require('./config/keys');
 
 require('./models/User'); //not executed automatically unless require it here
@@ -10,6 +12,16 @@ mongoose.connect(keys.mongoURI);
 
 const app = express(); //generates new express app, could be single app or more
 //this generated app listens incoming request
+
+app.use(
+    cookieSession({
+        maxAge: 30*24*60*60*1000, //30 days in millisecs
+        keys: [keys.cookieKey]
+    })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 require('./routes/authRoutes')(app);
 
