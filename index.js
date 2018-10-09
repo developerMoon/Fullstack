@@ -13,7 +13,7 @@ mongoose.connect(keys.mongoURI);
 const app = express(); //generates new express app, could be single app or more
 //this generated app listens incoming request
 
-app.use(
+app.use( //app.use -> wiring up middleware
     cookieSession({
         maxAge: 30*24*60*60*1000, //30 days in millisecs
         keys: [keys.cookieKey]
