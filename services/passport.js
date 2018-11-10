@@ -28,20 +28,18 @@ passport.use(
 				proxy: true //trust and put https://
 			}, 
 			//saving data to mongodb-async action
-      (accessToken, refreshToken, profile, done) => {
-				User.findOne({ googleId: profile.id })
-					.then((existingUser) => {
-						if (existingUser)	{
-							//we already have a record with the given ID
-							done(null, existingUser);
-						} else { //if it's null
-							//we don't have a user record with this ID, make a new record
-							new User({ googleId: profile.id })
-								.save() //save new user to db
-								.then(user => done(null, user));
-						}
-					});
-      }
+      async (accessToken, refreshToken, profile, done) => {
+				const existingUser = await User.findOne({ googleId: profile.id });
+				
+				if (existingUser)	{
+					//we already have a record with the given ID
+					return done(null, existingUser);
+				} 
+				//if it's null
+				//we don't have a user record with this ID, make a new record
+				const user = await new User({ googleId: profile.id }).save(); //save new user to db
+					done(null, user);
+			}
     )
 );
 
