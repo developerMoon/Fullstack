@@ -22,7 +22,7 @@ module.exports = app => {
     
     app.get('/api/logout', (req, res)=>{
         req.logout();
-        res.send(req.user); //undefined user
+        res.redirect('/'); //logged out user to landing page
     });
     
     app.get('/api/current_user', (req, res)=>{
