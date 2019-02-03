@@ -1,7 +1,8 @@
 const express = require('express'); //require: access to express library
 const mongoose = require('mongoose');
 const cookieSession = require('cookie-session');
-const passport = require('passport')
+const passport = require('passport');
+const bodyParser = require('body-parser');
 const keys = require('./config/keys');
 
 require('./models/User'); //not executed automatically unless require it here
@@ -13,6 +14,8 @@ mongoose.connect(keys.mongoURI);
 const app = express(); //generates new express app, could be single app or more
 //this generated app listens incoming request
 
+app.use(bodyParser.json());
+
 app.use( //app.use -> wiring up middleware
     cookieSession({
         maxAge: 30*24*60*60*1000, //30 days in millisecs
@@ -23,8 +26,10 @@ app.use( //app.use -> wiring up middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
-require('./routes/authRoutes')(app);
-require('./routes/billingRoutes')(app); //both export functions
+
+require('./routes/authRoutes','./routes/billingRoutes')(app);
+//require('./routes/billingRoutes')(app); 
+//both export functions
 //this PORT const shouldn't changed 
 const PORT = process.env.PORT || 5000;
 //Heroku inject environment variables
