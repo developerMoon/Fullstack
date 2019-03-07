@@ -11,7 +11,7 @@ export const fetchUser = () => async dispatch => {
 export const handleToken = (token) => async dispatch => {
     const res = await axios.post('/api/stripe', token); //after user buys credit, reload
 
-    dispatch({ type: FETCH_USER, payload: res.data });
+    dispatch({ type: FETCH_USER, payload: res.data });//update credits by fetching user
 };
 
 
