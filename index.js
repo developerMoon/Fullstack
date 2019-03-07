@@ -27,8 +27,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-require('./routes/authRoutes','./routes/billingRoutes')(app);
-//require('./routes/billingRoutes')(app); 
+require('./routes/authRoutes')(app);//,'./routes/billingRoutes')(app);
+require('./routes/billingRoutes')(app); 
 //both export functions
 //this PORT const shouldn't changed 
 const PORT = process.env.PORT || 5000;
