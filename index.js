@@ -6,6 +6,8 @@ const bodyParser = require('body-parser');
 const keys = require('./config/keys');
 
 require('./models/User'); //not executed automatically unless require it here
+require('./models/Survey');
+
 require('./services/passport'); //cuz passport.js is not exporting anything
 //order is important as user needs to be imported first then used in passport
 
