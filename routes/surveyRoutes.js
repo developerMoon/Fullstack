@@ -17,6 +17,11 @@ module.exports = app => {
       title,
       subject,
       body,
+      recipients: recipients.split(',').map(email => ({ email: email.trim()})),
+      //divide string and make it objects by map
+      //yes, no : have default value so no need to care now
+      _user: req.user.id,
+      dateSent: Date.now()  
     });
 
   });
