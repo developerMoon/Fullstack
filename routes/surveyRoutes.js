@@ -6,7 +6,7 @@ const surveyTemplate = require('../services/emailTemplates/surveyTemplate');
 const Survey = mongoose.model('surveys');
 
 module.exports = app => {
-  app.post('/api/surveys', requireLogin, requireCredits, (req, res) => {
+  app.post('/api/surveys', requireLogin, requireCredits, async (req, res) => {
     //if a user is logged in -> requireLogin (1)
     //if a user has enough credits -> reqireCredits (2) 
     //it has to be in the order as you want it to be executed
@@ -26,6 +26,17 @@ module.exports = app => {
     });
     //Great place to send an email
     const mailer = new Mailer(survey, surveyTemplate(survey));
-    mailer.send();
+    
+    try {
+      await mailer.send();
+      await survey.save();
+      req.user.credits -= 1;
+      const user = await req.user.save();
+
+      res.send(user); //new value credits
+    } catch (err) {
+      res.status(422).send(err);
+    }
+
   });
 };
