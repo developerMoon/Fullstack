@@ -2,11 +2,12 @@
 //a single label and text input
 import React from 'react';
 
-export default ({ input, label }) => {
+export default ({ input, label, meta: { error, touched } }) => { //props.meta
   return (
     <div>
       <label>{label}</label>
       <input {...input} />
+      {touched && error}
     </div>
   );
 };
