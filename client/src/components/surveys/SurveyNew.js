@@ -1,5 +1,6 @@
 //SurveyNew shows SurveyForm and SurveyFormReview
 import React, { Component } from 'react';
+import { reduxForm } from 'redux-form';
 import SurveyForm from './SurveyForm';
 import SurveyFormReview from './SurveyFormReview';
 class SurveyNew extends Component {
@@ -34,5 +35,7 @@ class SurveyNew extends Component {
     );
   }
 }
-
-export default SurveyNew;
+//Cancel the survey clears the input
+export default reduxForm({
+  form: 'surveyForm' //we didn't pass the destroyOnMount option
+})(SurveyNew);
