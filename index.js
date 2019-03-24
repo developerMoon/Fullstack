@@ -6,6 +6,8 @@ const bodyParser = require('body-parser');
 const keys = require('./config/keys');
 
 require('./models/User'); //not executed automatically unless require it here
+require('./models/Survey');
+
 require('./services/passport'); //cuz passport.js is not exporting anything
 //order is important as user needs to be imported first then used in passport
 
@@ -27,8 +29,27 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-require('./routes/authRoutes','./routes/billingRoutes')(app);
-//require('./routes/billingRoutes')(app); 
+require('./routes/authRoutes')(app);//,'./routes/billingRoutes')(app);
+require('./routes/billingRoutes')(app); 
+require('./routes/surveyRoutes')(app);
+//for routing in production
+//NODE_ENV: automatically set by heroku
+if (process.env.NODE_ENV === 'production') {
+    //Express will serve up production assets
+    //like out main.js file, or main.css file
+    //if server doesnt find needed component, find it under client/build
+    app.use(express.static('client/build'));
+
+    //Exress will serve up the index.html file
+    //if it doesn't recognize the route
+    //when all 3 attempts above doesnt work; finding other routes and client/build 
+    const path = require('path')
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+    });
+
+}
+
 //both export functions
 //this PORT const shouldn't changed 
 const PORT = process.env.PORT || 5000;
