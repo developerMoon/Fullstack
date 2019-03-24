@@ -61,8 +61,9 @@ function validate(values) {
   //otherwise - form values are invalid and doesn't submit
   return errors; 
 }
-
+//initialize and configure the form
 export default reduxForm({
   validate,
-  form: 'surveyForm'
+  form: 'surveyForm', //create namespace for the form
+  destroyOnUnmount: false //don't destroy the value 
 })(SurveyForm);
