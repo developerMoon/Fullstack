@@ -14,21 +14,22 @@ module.exports = app => {
   });
   
   app.post('/api/surveys/webhooks', (req, res) => {
-    const events = _.map(req.body, ({ email, url  }) => {
-      const pathname = new URL(url).pathname;
-      const p = new Path('/api/surveys/:surveyId/:choice');
-      const match = p.test(pathname); //match will be object or null
-      if (match) {
-        return { email, surveyId: match.surveyId, choice: match.choice };
-        //match can be null so no refactor for match
-      }
-    });
+    const p = new Path('/api/surveys/:surveyId/:choice');
+    
+    const events = _.chain(req.body)
+      .map(({ email, url  }) => {
+        const match = p.test(new URL(url).pathname); //match will be object or null
+        if (match) {
+          return { email, surveyId: match.surveyId, choice: match.choice };
+          //match can be null so no refactor for match
+        }
+      })
+      .compact()
+      //remove duplicated events, but a single user can vote multiple different surveys
+      .uniqBy('email', 'surveyId')
+      .value();
 
-    const compactEvents = _.compact(events);
-    //remove duplicated events, but a single user can vote multiple different surveys
-    const uniqueEvents = _.uniqBy(compactEvents, 'email', 'surveyId');
-
-    console.log(uniqueEvents);
+    console.log(events);
 
     res.send({});
   });
