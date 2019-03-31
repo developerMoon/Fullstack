@@ -24,7 +24,13 @@ module.exports = app => {
       }
     });
 
-    console.log(events);
+    const compactEvents = _.compact(events);
+    //remove duplicated events, but a single user can vote multiple different surveys
+    const uniqueEvents = _.uniqBy(compactEvents, 'email', 'surveyId');
+
+    console.log(uniqueEvents);
+
+    res.send({});
   });
 
   app.post('/api/surveys', requireLogin, requireCredits, async (req, res) => {
