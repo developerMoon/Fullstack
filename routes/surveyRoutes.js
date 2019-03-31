@@ -1,3 +1,6 @@
+const _ = require('lodash');
+const { Path } = require('path-parser');
+const { URL } = require('url'); //parse URL, comes with node
 const mongoose = require('mongoose');
 const requireLogin = require('../middlewares/requireLogin');
 const requireCredits = require('../middlewares/requireCredits');
@@ -10,6 +13,27 @@ module.exports = app => {
     res.send('Thanks for your feedback');
   });
   
+  app.post('/api/surveys/webhooks', (req, res) => {
+    const p = new Path('/api/surveys/:surveyId/:choice');
+    
+    const events = _.chain(req.body)
+      .map(({ email, url  }) => {
+        const match = p.test(new URL(url).pathname); //match will be object or null
+        if (match) {
+          return { email, surveyId: match.surveyId, choice: match.choice };
+          //match can be null so no refactor for match
+        }
+      })
+      .compact()
+      //remove duplicated events, but a single user can vote multiple different surveys
+      .uniqBy('email', 'surveyId')
+      .value();
+
+    console.log(events);
+
+    res.send({});
+  });
+
   app.post('/api/surveys', requireLogin, requireCredits, async (req, res) => {
     //if a user is logged in -> requireLogin (1)
     //if a user has enough credits -> reqireCredits (2) 

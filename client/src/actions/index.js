@@ -1,3 +1,4 @@
+//Action Creator
 import axios from 'axios';
 import { FETCH_USER } from './types';
 
@@ -13,6 +14,14 @@ export const handleToken = (token) => async dispatch => {
 
     dispatch({ type: FETCH_USER, payload: res.data });//update credits by fetching user
 };
+
+export const submitSurvey = (values, history) => async dispatch => {
+    const res = await axios.post('/api/surveys', values);
+
+    history.push('/surveys');
+    dispatch({ type: FETCH_USER, payload: res.data });
+};
+
 
 
 
