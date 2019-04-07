@@ -9,14 +9,23 @@ const surveyTemplate = require('../services/emailTemplates/surveyTemplate');
 const Survey = mongoose.model('surveys');
 
 module.exports = app => {
-  app.get('/api/surveys/thanks', (req, res) => {
+  //show logged in users the survey they submitted
+  //but we don't want to get every recipients lists(big list)
+  app.get('/api/surveys', requireLogin, async (req, res) => {
+    const surveys = await Survey.find({ _user: req.user.id })
+      .select({ recipients: false });
+
+    res.send(surveys);
+  });  
+  
+  app.get('/api/surveys/:surveyId/:choice', (req, res) => {
     res.send('Thanks for your feedback');
   });
   
   app.post('/api/surveys/webhooks', (req, res) => {
     const p = new Path('/api/surveys/:surveyId/:choice');
     
-    const events = _.chain(req.body)
+    _.chain(req.body)
       .map(({ email, url  }) => {
         const match = p.test(new URL(url).pathname); //match will be object or null
         if (match) {
@@ -27,9 +36,29 @@ module.exports = app => {
       .compact()
       //remove duplicated events, but a single user can vote multiple different surveys
       .uniqBy('email', 'surveyId')
+      .each(({ surveyId, email, choice }) => {
+        //sample query
+        //find the survey that has the same survey id
+        //find one argument and if it does, update the second
+        //async function but won't put async, because not gonna check these 
+        Survey.updateOne({
+          //_: assigned by mongo
+            _id: surveyId, 
+            recipients: {
+            $elemMatch: { email: email, responded: false }
+          }
+        }, 
+          {
+            //$inc: mongo operator, increment
+            //choice: not an array but the choice, yes or no
+            $inc: { [choice]: 1 },
+            //update responded to true
+            $set: { 'recipients.$.responded': true },
+            lastResponded: new Date()
+          }
+        ).exec(); //send it to the db
+      })
       .value();
-
-    console.log(events);
 
     res.send({});
   });
