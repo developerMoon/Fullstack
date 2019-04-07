@@ -9,7 +9,7 @@ const surveyTemplate = require('../services/emailTemplates/surveyTemplate');
 const Survey = mongoose.model('surveys');
 
 module.exports = app => {
-  app.get('/api/surveys/thanks', (req, res) => {
+  app.get('/api/surveys/:surveyId/:choice', (req, res) => {
     res.send('Thanks for your feedback');
   });
   
@@ -38,13 +38,16 @@ module.exports = app => {
             recipients: {
             $elemMatch: { email: email, responded: false }
           }
-        }, {
-          //$inc: mongo operator, increment
-          //choice: not an array but the choice, yes or no
-          $inc: { [choice]: 1 },
-          //update responded to true
-          $set: { 'recipients.$.responded': true }
-        }).exec(); //send it to the db
+        }, 
+          {
+            //$inc: mongo operator, increment
+            //choice: not an array but the choice, yes or no
+            $inc: { [choice]: 1 },
+            //update responded to true
+            $set: { 'recipients.$.responded': true },
+            lastResponded: new Date()
+          }
+        ).exec(); //send it to the db
       })
       .value();
 
