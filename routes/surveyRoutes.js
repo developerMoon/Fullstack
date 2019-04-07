@@ -9,6 +9,15 @@ const surveyTemplate = require('../services/emailTemplates/surveyTemplate');
 const Survey = mongoose.model('surveys');
 
 module.exports = app => {
+  //show logged in users the survey they submitted
+  //but we don't want to get every recipients lists(big list)
+  app.get('/api/surveys', requireLogin, async (req, res) => {
+    const surveys = await Survey.find({ _user: req.user.id })
+      .select({ recipients: false });
+
+    res.send(surveys);
+  });  
+  
   app.get('/api/surveys/:surveyId/:choice', (req, res) => {
     res.send('Thanks for your feedback');
   });
